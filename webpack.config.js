@@ -18,9 +18,9 @@ module.exports = {
         extensions: [ '.ts', '.js' ]
     },
     output: {
-        filename: 'app.js',       // バンドルのファイル名。[name]はentryで指定したキー
-        path: path.resolve(__dirname, 'src'),
-        publicPath: "/",          // ブラウザからバンドルにアクセスする際のパス
+        filename: 'app.js',                             // バンドルのファイル名。[name]はentryで指定したキー
+        path: path.resolve(__dirname, 'src'),           // ファイルの配置パス
+        publicPath: "/",                                // ブラウザからバンドルにアクセスする際のパス
         // library: ["com", "example"], // パッケージ名を配列で表現する
         // libraryTarget: 'umd'
     },

@@ -1,16 +1,32 @@
 import "phaser";
+import { WelcomeScene } from "./welcomeScene";
+import { GameScene } from "./gameScene";
+import { ScoreScene } from "./scoreScene";
+
+// ゲームの各種情報
 const config: GameConfig = {
-  title: "Starfall",
-  width: 800,
-  height: 600,
-  parent: "game",
-  backgroundColor: "#18216D"
+   title: "bounceball.io",
+   width: 800,
+   height: 600,
+   parent: "game",
+   // 
+   scene: [WelcomeScene, GameScene, ScoreScene],
+   physics: {
+      default: "arcade",
+      arcade: {
+         debug: false
+      }
+   },
+   backgroundColor: "#18216D"
 };
-export class StarfallGame extends Phaser.Game {
-  constructor(config: GameConfig) {
-    super(config);
-  }
-}
+
+export class MyGame extends Phaser.Game {
+   constructor(config: GameConfig) {
+      super(config);
+   }
+};
+
+// ロードされたらゲーム開始
 window.onload = () => {
-  var game = new StarfallGame(config);
+   var game = new MyGame(config);
 };
