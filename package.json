@@ -1,24 +1,32 @@
 {
-  "name": "climb.io",
+  "name": "bounceball.io",
   "version": "1.0.0",
-  "description": "climb.io",
-  "main": "server/server.js",
+  "description": "bounceball.io",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/server.js"
+    "start": "webpack-dev-server",
+    "build": "webpack --config webpack.config.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/voidoperator/climb.io.git"
   },
-  "author": "void.operator",
+  "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/voidoperator/climb.io/issues"
+    "url": "https://github.com/voidoperator/bounceball.io/issues"
   },
-  "homepage": "https://github.com/voidoperator/climb.io#readme",
+  "homepage": "https://github.com/voidoperator/bounceball.io#readme",
   "dependencies": {
     "express": "^4.16.4",
     "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "phaser": "^3.16.2",
+    "ts-loader": "^5.4.3",
+    "typescript": "^3.4.5",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.1",
+    "webpack-dev-server": "^3.3.1"
   }
 }
