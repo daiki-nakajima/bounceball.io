@@ -2,9 +2,8 @@ const path = require("path");
 
 module.exports = {
 
-    mode: 'development',             //webpack4以降はモード指定する
-    entry: './src/app.ts',
-    // entry: {app: './src/app.ts'},  //エントリーポイント。連想配列にできる
+    mode: 'development',    // webpack4以降はモード指定する
+    entry: './src/app.ts',  // エントリーポイント
     module: {
         rules: [
             {
@@ -21,11 +20,7 @@ module.exports = {
         filename: 'app.js',                            // バンドルのファイル名。[name]はentryで指定したキー
         path: path.resolve(__dirname, 'src'),          // ファイルの配置パス
         publicPath: "/",                               // ブラウザからバンドルにアクセスする際のパス
-        // library: ["com", "example"], // パッケージ名を配列で表現する
-        // libraryTarget: 'umd'
     },
-    // devtool: 'inline-source-map',    //ブラウザでのデバッグ用にソースマップを出力する
-
     //webpack-dev-server用設定
     devServer: {
         open: true,                                   // ブラウザを自動で開く
