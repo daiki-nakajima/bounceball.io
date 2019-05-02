@@ -6,6 +6,9 @@ export class GameScene extends Phaser.Scene {
    lastStarTime: number;
    starsCaught: number;
    starsFallen: number;
+   speed: number;
+   direction: number;
+   isMove: boolean;
    sand: Phaser.Physics.Arcade.StaticGroup;
    player: Phaser.Physics.Arcade.Sprite;
    info: Phaser.GameObjects.Text;
@@ -20,6 +23,9 @@ export class GameScene extends Phaser.Scene {
       this.lastStarTime = 0;
       this.starsCaught = 0;
       this.starsFallen = 0;
+      this.speed = 160;
+      this.direction = 1;
+      this.isMove = false;
    }
 
    preload(): void {
@@ -54,6 +60,9 @@ export class GameScene extends Phaser.Scene {
       this.cursors = this.input.keyboard.createCursorKeys();
       // Collider
       this.physics.add.collider(this.player, this.sand);
+      // Input Events
+      this.input.on("pointerdown", this.move, this);
+      this.input.on("pointerup", this.stop, this);
    }
 
    update(time: number): void {
@@ -78,7 +87,28 @@ export class GameScene extends Phaser.Scene {
       else {
          this.player.setVelocityX(0);
       }
+
+      if (this.isMove) {
+         this.player.setVelocityX(this.speed * this.direction);
+      } else {
+         this.player.setVelocityX(0);
+      }
       
+   }
+
+   move(p): void {
+      if (p.x < 800 / 2) {
+         this.direction = -1;
+         this.player.flipX = false;
+      } else {
+         this.direction = +1;
+         this.player.flipX = true;
+      }
+      this.isMove = true;
+   }
+
+   stop(): void {
+      this.isMove = false;
    }
 
    private onClick(star: Phaser.Physics.Arcade.Image): () => void {
