@@ -56,13 +56,14 @@ export class GameScene extends Phaser.Scene {
          repeat: -1
       });
       this.player.anims.play('neutral', true);
-      // Input Events
-      this.cursors = this.input.keyboard.createCursorKeys();
       // Collider
       this.physics.add.collider(this.player, this.sand);
+      // Make the camera follow the player
+      this.cameras.main.startFollow(this.player);
       // Input Events
       this.input.on("pointerdown", this.move, this);
       this.input.on("pointerup", this.stop, this);
+      // this.cursors = this.input.keyboard.createCursorKeys();
    }
 
    update(time: number): void {
