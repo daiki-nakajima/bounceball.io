@@ -2,6 +2,8 @@ import "phaser";
 
 export class GameScene extends Phaser.Scene {
 
+   // world: Phaser.Physics.Arcade.World;
+
    delta: number;
    lastStarTime: number;
    starsCaught: number;
@@ -37,12 +39,38 @@ export class GameScene extends Phaser.Scene {
    }
 
    create(): void {
-      this.add.image(400, 300, 'sky');
       // Ground
       this.sand = this.physics.add.staticGroup({ key: 'sand', frameQuantity: 20 });
       Phaser.Actions.PlaceOnLine(this.sand.getChildren(), new Phaser.Geom.Line(20, 580, 820, 580));
       this.sand.refresh();
       this.info = this.add.text(10, 10, '', { font: '24px Arial Bold', fill: '#FBFBAC' });
+      // Player
+      this.createPlayer();
+      // Collider
+      this.physics.add.collider(this.player, this.sand);
+      // Make the camera follow the player
+      this.cameras.main.startFollow(this.player);
+      // Input Events
+      this.input.on("pointerdown", this.go, this);
+      this.input.on("pointerup", this.stop, this);
+      this.cursors = this.input.keyboard.createCursorKeys();
+   }
+
+   update(time: number): void {
+      const diff: number = time - this.lastStarTime;
+      if (diff > this.delta) {
+         this.lastStarTime = time;
+         if (this.delta > 500) { this.delta -= 20; }
+         this.emitStar();
+      }
+      this.info.text =
+         this.starsCaught + " caught - " +
+         this.starsFallen + " fallen (max 3)";
+      // Player Move
+      this.movePlayer();
+   }
+
+   private createPlayer(): void {
       // Player's setting
       this.player = this.physics.add.sprite(100, 400, 'balls');
       this.player.setBounce(1.0);
@@ -56,48 +84,10 @@ export class GameScene extends Phaser.Scene {
          repeat: -1
       });
       this.player.anims.play('neutral', true);
-      // Collider
-      this.physics.add.collider(this.player, this.sand);
-      // Make the camera follow the player
-      this.cameras.main.startFollow(this.player);
-      // Input Events
-      this.input.on("pointerdown", this.move, this);
-      this.input.on("pointerup", this.stop, this);
-      // this.cursors = this.input.keyboard.createCursorKeys();
    }
 
-   update(time: number): void {
-      const diff: number = time - this.lastStarTime;
-      if (diff > this.delta) {
-         this.lastStarTime = time;
-         if (this.delta > 500) { this.delta -= 20; }
-         this.emitStar();
-      }
-      this.info.text =
-         this.starsCaught + " caught - " +
-         this.starsFallen + " fallen (max 3)";
-      // Play animation depend on key cursors
-      if (this.cursors.left.isDown) {
-         this.player.flipX = false;
-         this.player.setVelocityX(-160);
-      }
-      else if (this.cursors.right.isDown) {
-         this.player.flipX = true;
-         this.player.setVelocityX(160);
-      }
-      else {
-         this.player.setVelocityX(0);
-      }
-
-      if (this.isMove) {
-         this.player.setVelocityX(this.speed * this.direction);
-      } else {
-         this.player.setVelocityX(0);
-      }
-      
-   }
-
-   move(p): void {
+   private go(p): void {
+      this.isMove = true;
       if (p.x < 800 / 2) {
          this.direction = -1;
          this.player.flipX = false;
@@ -105,11 +95,18 @@ export class GameScene extends Phaser.Scene {
          this.direction = +1;
          this.player.flipX = true;
       }
-      this.isMove = true;
    }
 
-   stop(): void {
+   private stop(): void {
       this.isMove = false;
+   }
+
+   private movePlayer(): void {
+      if (this.isMove) {
+         this.player.setVelocityX(this.speed * this.direction);
+      } else {
+         this.player.setVelocityX(0);
+      }
    }
 
    private onClick(star: Phaser.Physics.Arcade.Image): () => void {
