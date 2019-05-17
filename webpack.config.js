@@ -3,7 +3,7 @@ const path = require("path");
 module.exports = {
 
     mode: 'development',    // webpack4以降はモード指定する
-    entry: './src/app.ts',  // エントリーポイント
+    entry: './src/client/app.ts',  // エントリーポイント
     module: {
         rules: [
             {
