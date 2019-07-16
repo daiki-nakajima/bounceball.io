@@ -12,7 +12,7 @@ module.exports = class GameObject {
     this.setPos(fX, fY);
   }
 
-  toJSON() {
+  toJson() {
     return {
       fX: this.fX,
       fY: this.fY,

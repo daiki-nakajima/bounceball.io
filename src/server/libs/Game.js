@@ -18,18 +18,18 @@ module.exports = class Game {
       let ball = null;
 
       // ゲーム開始時の処理の指定
-      socket.on('enter-the-game', () => {
-        // 自タンクの作成
+      socket.on('enter-the-game', objConfig => {
+        // 自ボールの作成
         console.log('enter-the-game : socket.id = %s', socket.id);
-        ball = world.createBall();
+        ball = world.createBall(socket.id, objConfig.strNickName);
       });
 
       // 移動コマンドの処理の指定
       socket.on('change-my-movement', objMovement => {
-        if (!ball) {
+        if (!ball || !ball.isAlive) {
           return;
         }
-        // 自タンクの移動
+        // 自ボールの移動
         ball.objMovement = objMovement;
       });
 
@@ -40,7 +40,7 @@ module.exports = class Game {
           return;
         }
         world.destroyBall(ball);
-        // 自タンクの解放
+        // 自ボールの解放
         ball = null;
       });
     });

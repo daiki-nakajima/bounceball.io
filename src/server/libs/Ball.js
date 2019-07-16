@@ -5,21 +5,17 @@ const OverlapTester = require('./OverlapTester');
 
 // ボールクラス
 module.exports = class Ball extends GameObject {
-  constructor(rectField, setWall) {
+  constructor(strSocketID, strNickName, rectField, setWall) {
     super(SharedSettings.BALL_WIDTH, SharedSettings.BALL_HEIGHT, 0.0, 0.0, 0.0);
 
+    this.strSocketID = strSocketID;
+    this.strNickName = strNickName;
     this.objMovement = {}; // 動作
     this.fSpeedX = GameSettings.BALL_SPEED; // 速度[m/s]。1frameあたり5進む => 1/30[s] で5進む => 1[s]で150進む。
     this.fSpeedY = 0;
     this.resiliency = GameSettings.BALL_RESILIENCY; // 反発力初期値
-    // 初期位置
-    this.fX =
-      Math.random() * (SharedSettings.FIELD_WIDTH - SharedSettings.BALL_WIDTH);
-    this.fY =
-      Math.random() *
-      (SharedSettings.FIELD_HEIGHT - SharedSettings.BALL_HEIGHT);
-
-    // this.fRotationSpeed = GameSettings.TANK_ROTATION_SPEED; // 回転速度[rad/s]。1frameあたり0.1進む => 1/30[s] で0.1進む => 1[s]で3[rad]進む。
+    this.isAlive = true; // 生存
+    this.iScore = 0; // スコア
 
     // 障害物にぶつからない初期位置の算出
     do {
@@ -28,6 +24,15 @@ module.exports = class Ball extends GameObject {
         rectField.fBottom + Math.random() * (rectField.fTop - rectField.fBottom)
       );
     } while (this.overlapWalls(setWall));
+  }
+
+  toJSON() {
+    return Object.assign(super.toJson(), {
+      strSocketID: this.strSocketID,
+      strNickName: this.strNickName,
+      isAlive: this.isAlive,
+      iScore: this.iScore
+    });
   }
 
   // 更新
@@ -64,7 +69,9 @@ module.exports = class Ball extends GameObject {
       if (this.landOnWalls(setWall) && this.fSpeedY > 0) {
         console.log('check is ok');
         // 床を踏んだのでバウンド。
-        this.fSpeedY = -12000 * fDeltaTime; // 加速度から速度
+        this.fSpeedY = this.resiliency * fDeltaTime;
+        // バウンド力UP
+        this.resiliency *= 1.01;
       } else if (
         !OverlapTester.pointInRect(rectField, { fX: this.fX, fY: this.fY })
       ) {
@@ -79,5 +86,11 @@ module.exports = class Ball extends GameObject {
     }
 
     return bDrived; // 前後方向の動きがあったかを返す（ボットタンクで使用する）
+  }
+
+  // 下へ落ちた
+  dead() {
+    this.isAlive = false;
+    return this.iLife;
   }
 };

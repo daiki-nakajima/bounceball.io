@@ -25,7 +25,7 @@ module.exports = class GameSettings {
   }
 
   static get BALL_RESILIENCY() {
-    return -2000;
+    return -12000;
   }
 
   // 壁

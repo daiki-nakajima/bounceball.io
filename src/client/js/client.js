@@ -17,6 +17,14 @@ $(window).on('beforeunload', event => {
   socket.disconnect();
 });
 
+// スタートボタン
+$('#start-button').on('click', () => {
+  // サーバーに'enter-the-game'を送信
+  const objConfig = { strNickName: $('#nickname').val() };
+  socket.emit('enter-the-game', objConfig);
+  $('#start-screen').hide();
+});
+
 // キーの入力（キーダウン、キーアップ）の処理
 let objMovement = {}; // 動作
 $(document).on('keydown keyup', event => {

@@ -32,7 +32,7 @@ class Screen {
     // 接続確立時の処理
     this.socket.on('connect', () => {
       console.log('connect : socket.id = %s', socket.id);
-      this.socket.emit('enter-the-game');
+      // this.socket.emit('enter-the-game');
     });
 
     // サーバーからの状態通知(update)に対する処理
@@ -40,6 +40,11 @@ class Screen {
       this.aBall = aBall;
       this.aWall = aWall;
       this.iProcessingTimeNanoSec = iProcessingTimeNanoSec;
+    });
+
+    // デッドしたらスタート画面に戻る
+    this.socket.on('dead', () => {
+      $('#start-screen').show();
     });
   }
 
@@ -53,6 +58,17 @@ class Screen {
 
   // 描画。animateから無限に呼び出される
   render(iTimeCurrent) {
+    // ボールリストから、socket.idで自ボールを取得する
+    let ballSelf = null;
+    if (null !== this.aBall) {
+      this.aBall.some(ball => {
+        if (ball.strSocketID === this.socket.id) {
+          // 自タンク
+          ballSelf = ball;
+          return true;
+        }
+      });
+    }
     // キャンバスのクリア
     this.context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -81,6 +97,15 @@ class Screen {
     this.context.lineWidth = RenderingSettings.FIELD_LINEWIDTH;
     this.context.strokeRect(0, 0, canvas.width, canvas.height);
     this.context.restore();
+
+    // 画面左上に得点表示
+    if (null !== ballSelf) {
+      this.context.save();
+      this.context.font = RenderingSettings.SCORE_FONT;
+      this.context.fillStyle = RenderingSettings.SCORE_COLOR;
+      this.context.fillText('Score : ' + ballSelf.iScore, 20, 40);
+      this.context.restore();
+    }
 
     // 画面右上にサーバー処理時間表示
     this.context.save();
@@ -138,11 +163,11 @@ class Screen {
   }
 
   renderBall(ball, iIndexFrame) {
-    this.context.save();
+    this.context.save(); // translate前の状態をセーブ
     // ボールの座標値に移動
     this.context.translate(ball.fX, ball.fY);
     // 画像描画
-    this.context.save();
+    this.context.save(); // rotate前の状態をセーブ
     this.context.rotate(ball.fAngle);
     this.context.drawImage(
       this.assets.imageItems,
@@ -155,7 +180,16 @@ class Screen {
       SharedSettings.BALL_WIDTH, // 描画先領域の大きさ
       SharedSettings.BALL_HEIGHT
     ); // 描画先領域の大きさ
-    this.context.restore();
-    this.context.restore();
+    this.context.restore(); // rotate前の状態をリストア
+
+    // ニックネーム
+    this.context.save(); // ニックネーム描画前をセーブ
+    this.context.textAlign = 'center';
+    this.context.font = RenderingSettings.NICKNAME_FONT;
+    this.context.fillStyle = RenderingSettings.NICKNAME_COLOR;
+    this.context.fillText(ball.strNickName, 0, -50);
+    this.context.restore(); // ニックネーム描画前をリストア
+
+    this.context.restore(); // translate前の状態をリストア
   }
 }

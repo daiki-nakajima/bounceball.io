@@ -57,6 +57,14 @@ module.exports = class World {
     };
     // ボールごとの処理
     this.setBall.forEach(ball => {
+      // ボールが落ちていたら削除する
+      if (!ball.isAlive) {
+        console.log('dead : socket.id = %s', ball.strSocketID);
+        this.destroyBall(ball);
+      }
+      // スコア加算
+      ball.iScore++;
+      // ボールの座標値を更新する
       ball.update(fDeltaTime, rectBallField, this.setWall);
     });
   }
@@ -68,7 +76,7 @@ module.exports = class World {
   doNewActions(fDeltaTime) {}
 
   // ボールの生成
-  createBall() {
+  createBall(strSocketID, strNickName) {
     // ボールの可動域
     const rectBallField = {
       fLeft: 0 + SharedSettings.BALL_WIDTH * 0.5,
@@ -77,7 +85,12 @@ module.exports = class World {
       fTop: SharedSettings.FIELD_HEIGHT - SharedSettings.BALL_HEIGHT * 0.5
     };
     // ボールの生成
-    const ball = new Ball(rectBallField, this.setWall);
+    const ball = new Ball(
+      strSocketID,
+      strNickName,
+      rectBallField,
+      this.setWall
+    );
     // ボールリストへの登録
     this.setBall.add(ball);
     return ball;
@@ -87,5 +100,7 @@ module.exports = class World {
   destroyBall(ball) {
     // ボールリストからの削除
     this.setBall.delete(ball);
+    // 削除対象ボールのクライアントにイベント'dead'を送信
+    this.io.to(tank.strSocketID).emit('dead');
   }
 };
