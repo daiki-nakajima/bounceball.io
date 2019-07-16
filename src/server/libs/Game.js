@@ -1,4 +1,7 @@
 const World = require('./World');
+const OverlapTester = require('./OverlapTester');
+// 設定
+const SharedSettings = require('../../client/js/SharedSettings');
 const GameSettings = require('./GameSettings');
 
 // ゲームクラス
@@ -16,6 +19,9 @@ module.exports = class Game {
       console.log('connection : socket.id = %s', socket.id);
       // コネクションごとのボールオブジェクト。イベントをまたいで使用される。
       let ball = null;
+
+      // まだゲーム開始前。プレイしていない通信のソケットIDリストに追加
+      world.setNotPlayingSocketID.add(socket.id);
 
       // ゲーム開始時の処理の指定
       socket.on('enter-the-game', objConfig => {
@@ -37,6 +43,8 @@ module.exports = class Game {
       socket.on('disconnect', () => {
         console.log('disconnect : socket.id = %s', socket.id);
         if (!ball) {
+          // プレイしていない通信のソケットIDリストから削除
+          world.setNotPlayingSocketID.delete(socket.id);
           return;
         }
         world.destroyBall(ball);
@@ -62,12 +70,59 @@ module.exports = class Game {
       const iNanosecDiff = hrtimeDiff[0] * 1e9 + hrtimeDiff[1];
 
       // 最新状況をクライアントに送信
-      io.emit(
-        'update',
-        Array.from(world.setBall),
-        Array.from(world.setWall),
-        iNanosecDiff
-      ); // 送信
+      // タンクごとの処理
+      world.setBall.forEach(ball => {
+        if ('' !== ball.strSocketID) {
+          // ボットは無処理
+          const rectVisibleArea = {
+            fLeft: ball.fX - SharedSettings.CANVAS_WIDTH * 0.5,
+            fBottom: ball.fY - SharedSettings.CANVAS_HEIGHT * 0.5,
+            fRight: ball.fX + SharedSettings.CANVAS_WIDTH * 0.5,
+            fTop: ball.fY + SharedSettings.CANVAS_HEIGHT * 0.5
+          };
+          io.to(ball.strSocketID).emit(
+            'update',
+            Array.from(world.setBall).filter(ball => {
+              return OverlapTester.overlapRects(
+                rectVisibleArea,
+                ball.rectBound
+              );
+            }),
+            Array.from(world.setWall).filter(wall => {
+              return OverlapTester.overlapRects(
+                rectVisibleArea,
+                wall.rectBound
+              );
+            }),
+            iNanosecDiff
+          ); // 個別送信
+        }
+      });
+
+      // プレーしていないソケットごとの処理
+      const rectVisibleArea = {
+        fLeft:
+          SharedSettings.FIELD_WIDTH * 0.5 - SharedSettings.CANVAS_WIDTH * 0.5,
+        fBottom:
+          SharedSettings.FIELD_HEIGHT * 0.5 -
+          SharedSettings.CANVAS_HEIGHT * 0.5,
+        fRight:
+          SharedSettings.FIELD_WIDTH * 0.5 + SharedSettings.CANVAS_WIDTH * 0.5,
+        fTop:
+          SharedSettings.FIELD_HEIGHT * 0.5 + SharedSettings.CANVAS_HEIGHT * 0.5
+      };
+      world.setNotPlayingSocketID.forEach(strSocketID => {
+        io.to(strSocketID).emit(
+          'update',
+          Array.from(world.setBall).filter(tank => {
+            return OverlapTester.overlapRects(rectVisibleArea, tank.rectBound);
+          }),
+          Array.from(world.setWall).filter(wall => {
+            return OverlapTester.overlapRects(rectVisibleArea, wall.rectBound);
+          }),
+          iNanosecDiff
+        ); // 個別送信
+      });
     }, 1000 / GameSettings.FRAMERATE); // 単位は[ms]。1000[ms] / FRAMERATE[回]
   }
 };

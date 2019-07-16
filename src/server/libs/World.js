@@ -14,6 +14,7 @@ module.exports = class World {
     this.io = io;
     this.setBall = new Set();
     this.setWall = new Set();
+    this.setNotPlayingSocketID = new Set(); // プレイしていない通信のソケットIDリスト
 
     // 壁の生成
     for (let i = 0; i < GameSettings.WALL_COUNT; i++) {
@@ -77,6 +78,8 @@ module.exports = class World {
 
   // ボールの生成
   createBall(strSocketID, strNickName) {
+    // ゲーム開始。プレイしていない通信のソケットIDリストから削除
+    this.setNotPlayingSocketID.delete(strSocketID);
     // ボールの可動域
     const rectBallField = {
       fLeft: 0 + SharedSettings.BALL_WIDTH * 0.5,
@@ -100,7 +103,13 @@ module.exports = class World {
   destroyBall(ball) {
     // ボールリストからの削除
     this.setBall.delete(ball);
-    // 削除対象ボールのクライアントにイベント'dead'を送信
-    this.io.to(ball.strSocketID).emit('dead');
+    if (false) {
+      // ボット
+    } else {
+      // ゲーム開始前に戻るので、プレイしていない通信のソケットIDリストに追加
+      this.setNotPlayingSocketID.add(ball.strSocketID);
+      // 削除対象ボールのクライアントにイベント'dead'を送信
+      this.io.to(ball.strSocketID).emit('dead');
+    }
   }
 };

@@ -13,8 +13,8 @@ class Screen {
     this.aWall = null;
 
     // キャンバスの初期化
-    this.canvas.width = SharedSettings.FIELD_WIDTH;
-    this.canvas.height = SharedSettings.FIELD_HEIGHT;
+    this.canvas.width = SharedSettings.CANVAS_WIDTH;
+    this.canvas.height = SharedSettings.CANVAS_HEIGHT;
 
     // ソケットの初期化
     this.initSocket();
@@ -79,6 +79,9 @@ class Screen {
       // 自タンク座標値
       this.fCenterX = ballSelf.fX;
       this.fCenterY = ballSelf.fY;
+    } else {
+      this.fCenterX = SharedSettings.FIELD_WIDTH * 0.5;
+      this.fCenterY = SharedSettings.FIELD_HEIGHT * 0.5;
     }
 
     // キャンバスのクリア
@@ -160,17 +163,49 @@ class Screen {
     ); // 描画先領域の大きさ
   }
 
+  // フィールドの描画 / キャンバスと干渉する領域のみ描画
   renderField() {
     this.context.save();
 
-    let iCountX = parseInt(
-      SharedSettings.FIELD_WIDTH / RenderingSettings.FIELDTILE_WIDTH
+    let fVisibleAreaLeft = this.fCenterX - this.canvas.width * 0.5;
+    let fVisibleAreaTop = this.fCenterY - this.canvas.height * 0.5;
+    let fVisibleAreaRight = this.fCenterX + this.canvas.width * 0.5;
+    let fVisibleAreaBottom = this.fCenterY + this.canvas.height * 0.5;
+    if (0 > fVisibleAreaLeft) {
+      fVisibleAreaLeft = 0.0;
+    } // ミニマックス補正
+    if (0 > fVisibleAreaTop) {
+      fVisibleAreaTop = 0.0;
+    } // ミニマックス補正
+    if (SharedSettings.FIELD_WIDTH - 1 < fVisibleAreaRight) {
+      fVisibleAreaRight = SharedSettings.FIELD_WIDTH - 1;
+    } // ミニマックス補正
+    if (SharedSettings.FIELD_HEIGHT - 1 < fVisibleAreaBottom) {
+      fVisibleAreaBottom = SharedSettings.FIELD_HEIGHT - 1;
+    } // ミニマックス補正
+    const iBackTileIndexLeft = parseInt(
+      fVisibleAreaLeft / RenderingSettings.FIELDTILE_WIDTH
     );
-    let iCountY = parseInt(
-      SharedSettings.FIELD_HEIGHT / RenderingSettings.FIELDTILE_HEIGHT
+    const iBackTileIndexTop = parseInt(
+      fVisibleAreaTop / RenderingSettings.FIELDTILE_HEIGHT
     );
-    for (let iIndexY = 1 - iCountY; iIndexY <= iCountY; iIndexY++) {
-      for (let iIndexX = 1 - iCountX; iIndexX <= iCountX; iIndexX++) {
+    const iBackTileIndexRight = parseInt(
+      fVisibleAreaRight / RenderingSettings.FIELDTILE_WIDTH
+    );
+    const iBackTileIndexBottom = parseInt(
+      fVisibleAreaBottom / RenderingSettings.FIELDTILE_HEIGHT
+    );
+
+    for (
+      let iIndexY = iBackTileIndexTop - 1;
+      iIndexY <= iBackTileIndexBottom + 1;
+      iIndexY++
+    ) {
+      for (
+        let iIndexX = iBackTileIndexLeft - 1;
+        iIndexX <= iBackTileIndexRight + 1;
+        iIndexX++
+      ) {
         this.context.drawImage(
           this.assets.imageField,
           // 元画像のサイズ指定
