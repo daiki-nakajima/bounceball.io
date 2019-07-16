@@ -101,6 +101,6 @@ module.exports = class World {
     // ボールリストからの削除
     this.setBall.delete(ball);
     // 削除対象ボールのクライアントにイベント'dead'を送信
-    this.io.to(tank.strSocketID).emit('dead');
+    this.io.to(ball.strSocketID).emit('dead');
   }
 };

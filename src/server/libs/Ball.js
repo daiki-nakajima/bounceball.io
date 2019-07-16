@@ -67,7 +67,6 @@ module.exports = class Ball extends GameObject {
       let bCollision = false;
       // 床を踏んだか判定。
       if (this.landOnWalls(setWall) && this.fSpeedY > 0) {
-        console.log('check is ok');
         // 床を踏んだのでバウンド。
         this.fSpeedY = this.resiliency * fDeltaTime;
         // バウンド力UP
