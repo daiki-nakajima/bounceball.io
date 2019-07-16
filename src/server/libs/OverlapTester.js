@@ -21,6 +21,16 @@ module.exports = class OverlapTester {
     return true;
   }
 
+  static landOnRects(rect1, rect2) {
+    // 矩形１（=ボール）が矩形２（=床）よりも上にある状態で重なっていれば、踏んでいる可能性あり。
+    // ？？？なぜか条件式を逆にするとうまくいく。Canvas の正が下向きな事と関係している気がするが、保留。
+    if (rect2.fBottom >= rect1.fBottom) {
+      return true;
+    }
+    // 上記以外は踏んでいないとみなす。
+    return false;
+  }
+
   static pointInRect(rect, point) {
     return (
       rect.fLeft <= point.fX &&

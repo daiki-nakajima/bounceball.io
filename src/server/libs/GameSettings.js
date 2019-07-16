@@ -11,13 +11,25 @@ module.exports = class GameSettings {
   static get BALL_SPEED() {
     return 300.0;
   }
+
   // 回転速度[rad/s]。1frameあたり0.1進む => 1/30[s] で0.1進む => 1[s]で3[rad]進む。
   // static get BALL_ROTATION_SPEED() {
   //   return 3.0;
   // }
+  static get GRAVITY_ACCELERATION() {
+    return 500;
+  }
+
+  static get BALL_MASS() {
+    return 40;
+  }
+
+  static get BALL_RESILIENCY() {
+    return -2000;
+  }
 
   // 壁
   static get WALL_COUNT() {
-    return 3;
+    return 5;
   }
 };

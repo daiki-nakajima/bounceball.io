@@ -39,4 +39,16 @@ module.exports = class GameObject {
       }
     });
   }
+
+  // 床を踏んでいるか判定
+  landOnWalls(setWall) {
+    return Array.from(setWall).some(wall => {
+      if (
+        OverlapTester.overlapRects(this.rectBound, wall.rectBound) &&
+        OverlapTester.landOnRects(this.rectBound, wall.rectBound)
+      ) {
+        return true;
+      }
+    });
+  }
 };
