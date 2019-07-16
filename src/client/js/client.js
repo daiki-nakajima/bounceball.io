@@ -46,3 +46,46 @@ $(document).on('keydown keyup', event => {
     socket.emit('change-my-movement', objMovement);
   }
 });
+
+// タッチ情報（キー：identifier, 値：（pageX, pageY）のリスト
+const touches = {};
+
+// // タッチ開始
+// $('#canvas-2d').on('touchstart', event => {
+//   event.preventDefault(); // ブラウザ規定の動作の抑止
+//   //console.log( 'touchstart', event, event.originalEvent.changedTouches );
+//   socket.emit('shoot'); // ショット
+//   objMovement['forward'] = true; // 前進
+//   Array.from(event.originalEvent.changedTouches).forEach(touch => {
+//     // タッチ情報のリストへの追加
+//     touches[touch.identifier] = { pageX: touch.pageX, pageY: touch.pageY };
+//   });
+// });
+
+// タッチしながら移動
+$('#canvas-2d').on('touchmove', event => {
+  event.preventDefault(); // ブラウザ規定の動作の抑止
+  objMovement['right'] = false; // 右旋回の設定の解除
+  objMovement['left'] = false; // 左旋回の設定の解除
+  Array.from(event.originalEvent.changedTouches).forEach(touch => {
+    // 開始点に対するスライド方向い従い、右、左を設定する
+    const startTouch = touches[touch.identifier];
+    objMovement['right'] |= 30 < touch.pageX - startTouch.pageX;
+    objMovement['left'] |= -30 > touch.pageX - startTouch.pageX;
+  });
+  socket.emit('change-my-movement', objMovement);
+});
+
+// タッチ終了
+$('#canvas-2d').on('touchend', event => {
+  event.preventDefault(); // ブラウザ規定の動作の抑止
+  Array.from(event.originalEvent.changedTouches).forEach(touch => {
+    // タッチ情報の削除
+    delete touches[touch.identifier];
+  });
+  if (0 === Object.keys(touches).length) {
+    // 移動終了
+    objMovement = {};
+    socket.emit('change-my-movement', objMovement);
+  }
+});
