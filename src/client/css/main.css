@@ -1,0 +1,56 @@
+body {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background-color: rgb(159, 214, 247);
+}
+
+body img {
+    width: 100%;
+    height: 100%;
+    max-width: 502px;
+    max-height: 75px;
+}
+
+#canvas-2d {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    object-fit: contain;
+    background-color: rgb(159, 214, 247);
+    cursor: crosshair;
+}
+
+#start-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    z-index: 10;
+    background-color: rgb(159, 214, 247);
+}
+
+#start-button {
+    display: inline-block;
+    padding: 0.3em 1em;
+    font-size: 0.75em;
+    background: rgb(255,163,59);
+    color: black;
+    border: solid 2px black;
+    border-radius: 3px;
+    transition: .4s;
+}
+
+#start-button:hover {
+    background: black;
+    color: rgb(255,163,59);
+}
+
+#logo {
+    margin: 0 auto;
+}
+
