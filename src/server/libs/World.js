@@ -25,13 +25,23 @@ module.exports = class World {
       const fY_bottom =
         Math.random() *
         (SharedSettings.FIELD_HEIGHT - SharedSettings.WALL_HEIGHT);
-      // 壁生成
-      const wall = new Wall(
-        fX_left + SharedSettings.WALL_WIDTH * 0.5,
-        fY_bottom + SharedSettings.WALL_HEIGHT * 0.5
-      );
-      // 壁リストへの登録
-      this.setWall.add(wall);
+      for (let tileX = -1; tileX <= 1; tileX++) {
+        for (let tileY = -1; tileY <= 1; tileY++) {
+          // let tileX = 1;
+          // let tileY = 1;
+          // 壁生成
+          const wall = new Wall(
+            fX_left +
+              SharedSettings.WALL_WIDTH * 0.5 +
+              tileX * SharedSettings.FIELD_WIDTH,
+            fY_bottom +
+              SharedSettings.WALL_HEIGHT * 0.5 +
+              tileY * SharedSettings.FIELD_HEIGHT
+          );
+          // 壁リストへの登録
+          this.setWall.add(wall);
+        }
+      }
     }
   }
 

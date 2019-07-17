@@ -28,8 +28,12 @@ module.exports = class GameSettings {
     return -12000;
   }
 
+  static get BALL_UPOFRATE() {
+    return 1.02;
+  }
+
   // 壁
   static get WALL_COUNT() {
-    return 5;
+    return 12;
   }
 };

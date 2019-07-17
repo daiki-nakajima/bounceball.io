@@ -39,4 +39,24 @@ module.exports = class OverlapTester {
       rect.fTop >= point.fY
     );
   }
+
+  static touchDirInRect(rect, point) {
+    // 左端に衝突
+    if (rect.fLeft > point.fX) {
+      return 'left';
+    }
+    // 右端に衝突
+    if (rect.fRight < point.fX) {
+      return 'right';
+    }
+    // 下端に衝突
+    if (rect.fBottom > point.fY) {
+      return 'bottom';
+    }
+    // 上端に衝突
+    if (rect.fTop < point.fY) {
+      return 'top';
+    }
+    return 'noTouch';
+  }
 };

@@ -70,18 +70,20 @@ module.exports = class Game {
       const iNanosecDiff = hrtimeDiff[0] * 1e9 + hrtimeDiff[1];
 
       // 最新状況をクライアントに送信
-      // タンクごとの処理
+      // ボールごとの処理
       world.setBall.forEach(ball => {
         if ('' !== ball.strSocketID) {
-          // ボットは無処理
+          // 矩形表示領域
           const rectVisibleArea = {
             fLeft: ball.fX - SharedSettings.CANVAS_WIDTH * 0.5,
             fBottom: ball.fY - SharedSettings.CANVAS_HEIGHT * 0.5,
             fRight: ball.fX + SharedSettings.CANVAS_WIDTH * 0.5,
             fTop: ball.fY + SharedSettings.CANVAS_HEIGHT * 0.5
           };
+          // 各ボールへ個別送信
           io.to(ball.strSocketID).emit(
             'update',
+            // 矩形表示領域に重なっていないボール、壁は返さない（＝表示されない）
             Array.from(world.setBall).filter(ball => {
               return OverlapTester.overlapRects(
                 rectVisibleArea,
@@ -95,7 +97,7 @@ module.exports = class Game {
               );
             }),
             iNanosecDiff
-          ); // 個別送信
+          );
         }
       });
 

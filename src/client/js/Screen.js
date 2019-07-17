@@ -4,6 +4,13 @@ class Screen {
     this.socket = socket;
     this.canvas = canvas;
     this.context = canvas.getContext('2d');
+    // this.canvas = canvas[0];
+    // this.ga_canvas = {
+    //   0: document.getElementById('canvas1'),
+    //   1: document.getElementById('canvas2')
+    // };
+    // this.ga_flip = 0;
+    // this.context = this.ga_canvas[this.ga_flip].getContext('2d');
 
     this.assets = new Assets();
     this.iProcessingTimeNanoSec = 0;
@@ -29,6 +36,8 @@ class Screen {
     // 描画中心座標値
     this.fCenterX = SharedSettings.FIELD_WIDTH * 0.5;
     this.fCenterY = SharedSettings.FIELD_HEIGHT * 0.5;
+    // 中心座標の初期化完了フラグ
+    this.isCentered = false;
   }
 
   // ソケットの初期化
@@ -62,6 +71,12 @@ class Screen {
 
   // 描画。animateから無限に呼び出される
   render(iTimeCurrent) {
+    // ダブルバッファリング
+    // this.ga_canvas[1 - this.ga_flip].style.visibility = 'hidden';
+    // this.ga_canvas[this.ga_flip].style.visibility = 'visible';
+    // this.ga_flip = 1 - this.ga_flip;
+    // this.context = this.ga_canvas[this.ga_flip].getContext('2d');
+
     // ボールリストから、socket.idで自ボールを取得する
     let ballSelf = null;
     if (null !== this.aBall) {
@@ -79,6 +94,10 @@ class Screen {
       // 自タンク座標値
       this.fCenterX = ballSelf.fX;
       this.fCenterY = ballSelf.fY;
+      // if (this.fCenterY >= ballSelf.fY || !this.isCentered) {
+      //   this.fCenterY = ballSelf.fY;
+      //   this.isCentered = true;
+      // }
     } else {
       this.fCenterX = SharedSettings.FIELD_WIDTH * 0.5;
       this.fCenterY = SharedSettings.FIELD_HEIGHT * 0.5;
@@ -149,6 +168,7 @@ class Screen {
   }
 
   renderWall(wall) {
+    this.context.save();
     // 画像描画
     this.context.drawImage(
       this.assets.imageWalls,
@@ -161,68 +181,27 @@ class Screen {
       SharedSettings.WALL_WIDTH, // 描画先領域の大きさ
       SharedSettings.WALL_HEIGHT
     ); // 描画先領域の大きさ
+    this.context.restore();
   }
 
   // フィールドの描画 / キャンバスと干渉する領域のみ描画
+  // 原因わからないが、描画が追いつかないため停止
   renderField() {
-    this.context.save();
-
-    let fVisibleAreaLeft = this.fCenterX - this.canvas.width * 0.5;
-    let fVisibleAreaTop = this.fCenterY - this.canvas.height * 0.5;
-    let fVisibleAreaRight = this.fCenterX + this.canvas.width * 0.5;
-    let fVisibleAreaBottom = this.fCenterY + this.canvas.height * 0.5;
-    if (0 > fVisibleAreaLeft) {
-      fVisibleAreaLeft = 0.0;
-    } // ミニマックス補正
-    if (0 > fVisibleAreaTop) {
-      fVisibleAreaTop = 0.0;
-    } // ミニマックス補正
-    if (SharedSettings.FIELD_WIDTH - 1 < fVisibleAreaRight) {
-      fVisibleAreaRight = SharedSettings.FIELD_WIDTH - 1;
-    } // ミニマックス補正
-    if (SharedSettings.FIELD_HEIGHT - 1 < fVisibleAreaBottom) {
-      fVisibleAreaBottom = SharedSettings.FIELD_HEIGHT - 1;
-    } // ミニマックス補正
-    const iBackTileIndexLeft = parseInt(
-      fVisibleAreaLeft / RenderingSettings.FIELDTILE_WIDTH
-    );
-    const iBackTileIndexTop = parseInt(
-      fVisibleAreaTop / RenderingSettings.FIELDTILE_HEIGHT
-    );
-    const iBackTileIndexRight = parseInt(
-      fVisibleAreaRight / RenderingSettings.FIELDTILE_WIDTH
-    );
-    const iBackTileIndexBottom = parseInt(
-      fVisibleAreaBottom / RenderingSettings.FIELDTILE_HEIGHT
-    );
-
-    for (
-      let iIndexY = iBackTileIndexTop - 1;
-      iIndexY <= iBackTileIndexBottom + 1;
-      iIndexY++
-    ) {
-      for (
-        let iIndexX = iBackTileIndexLeft - 1;
-        iIndexX <= iBackTileIndexRight + 1;
-        iIndexX++
-      ) {
-        this.context.drawImage(
-          this.assets.imageField,
-          // 元画像のサイズ指定
-          this.assets.rectFieldInFieldImage.sx, // 元画像の右上座標x
-          this.assets.rectFieldInFieldImage.sy, // 元画像の右上座標y
-          this.assets.rectFieldInFieldImage.sw, // 元画像の幅
-          this.assets.rectFieldInFieldImage.sh, // 元画像の高さ
-          // 描画位置指定
-          iIndexX * RenderingSettings.FIELDTILE_WIDTH, // 描画領域の右上座標（領域中心が、原点になるように指定する）
-          iIndexY * RenderingSettings.FIELDTILE_HEIGHT, // 描画領域の右上座標（領域中心が、原点になるように指定する）
-          RenderingSettings.FIELDTILE_WIDTH, // 描画領域の幅
-          RenderingSettings.FIELDTILE_HEIGHT // 描画領域の高さ
-        );
-      }
-    }
-
-    this.context.restore();
+    // this.context.save();
+    // this.context.drawImage(
+    //   this.assets.imageField,
+    //   // 元画像のサイズ指定
+    //   this.assets.rectFieldInFieldImage.sx, // 元画像の右上座標x
+    //   this.assets.rectFieldInFieldImage.sy, // 元画像の右上座標y
+    //   this.assets.rectFieldInFieldImage.sw, // 元画像の幅
+    //   this.assets.rectFieldInFieldImage.sh, // 元画像の高さ
+    //   // 描画位置指定
+    //   1 * RenderingSettings.FIELDTILE_WIDTH, // 描画領域の右上座標（領域中心が、原点になるように指定する）
+    //   1 * RenderingSettings.FIELDTILE_HEIGHT, // 描画領域の右上座標（領域中心が、原点になるように指定する）
+    //   RenderingSettings.FIELDTILE_WIDTH, // 描画領域の幅
+    //   RenderingSettings.FIELDTILE_HEIGHT // 描画領域の高さ
+    // );
+    // this.context.restore();
   }
 
   renderBall(ball, iIndexFrame) {
@@ -231,7 +210,7 @@ class Screen {
     this.context.translate(ball.fX, ball.fY);
     // 画像描画
     this.context.save(); // rotate前の状態をセーブ
-    this.context.rotate(ball.fAngle);
+    // this.context.rotate(ball.fAngle);
     this.context.drawImage(
       this.assets.imageItems,
       this.assets.arectBallInItemsImage[iIndexFrame].sx,

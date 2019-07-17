@@ -10,7 +10,7 @@ class RenderingSettings {
 
   // フィールド
   static get FIELD_LINECOLOR() {
-    return 'blue';
+    return 'black';
   }
   static get FIELD_LINEWIDTH() {
     return 5;
