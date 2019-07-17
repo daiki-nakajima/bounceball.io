@@ -54,3 +54,16 @@ body img {
     margin: 0 auto;
 }
 
+#nickname {
+    padding: 0.3em;
+    font-size: 0.5em;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid black;
+}
+
+#nickname:focus {
+	border-bottom: 2px solid rgb(255,163,59);
+	outline: none;
+}
+
