@@ -16,6 +16,7 @@ module.exports = class Ball extends GameObject {
     this.resiliency = GameSettings.BALL_RESILIENCY; // 反発力初期値
     this.isAlive = true; // 生存
     this.iScore = 0; // スコア
+    this.isAttack = false;
 
     // 障害物にぶつからない初期位置を算出するまでループ
     do {
@@ -49,7 +50,7 @@ module.exports = class Ball extends GameObject {
   update(fDeltaTime, rectField, setWall) {
     const fX_old = this.fX; // 移動前座標値のバックアップ
     const fY_old = this.fY; // 移動前座標値のバックアップ
-    console.log(this.fX, this.fY);
+    // console.log(this.fX, this.fY);
 
     // X座標の計算（方向キー）
     let fX_new = this.fX;
@@ -67,6 +68,15 @@ module.exports = class Ball extends GameObject {
     let force = GameSettings.BALL_MASS * GameSettings.GRAVITY_ACCELERATION; // 運動方程式
     let acceleration = force / GameSettings.BALL_MASS; // 力から加速度
     this.fSpeedY += acceleration * fDeltaTime; // 加速度から速度
+    // 下入力で急降下（攻撃）
+    if (this.objMovement['back']) {
+      this.fSpeedY = -100;
+
+      setTimeout(() => {
+        this.isAttack = true;
+        this.fSpeedY = 2500;
+      }, 500);
+    }
     fY_new += this.fSpeedY * fDeltaTime; // 速度から位置
 
     // 座標更新
@@ -76,6 +86,8 @@ module.exports = class Ball extends GameObject {
     let bCollision = false;
     // 床を踏んだか判定。
     if (this.landOnWalls(setWall) && this.fSpeedY > 0) {
+      // 攻撃終了
+      this.isAttack = false;
       // 床を踏んだのでバウンド。
       this.fSpeedY = this.resiliency * fDeltaTime;
       // バウンド力UP
