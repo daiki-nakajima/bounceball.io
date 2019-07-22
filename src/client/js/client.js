@@ -2,13 +2,9 @@
 
 // サーバーへの接続要求
 const socket = io.connect();
-
 // キャンバス
 const canvas = document.querySelector('#canvas-2d');
-
-// キャンバスオブジェクト
 const screen = new Screen(socket, canvas);
-
 // キャンバスの描画開始
 screen.animate(0);
 
@@ -51,16 +47,16 @@ $(document).on('keydown keyup', event => {
 const touches = {};
 
 // // タッチ開始
-// $('#canvas-2d').on('touchstart', event => {
-//   event.preventDefault(); // ブラウザ規定の動作の抑止
-//   //console.log( 'touchstart', event, event.originalEvent.changedTouches );
-//   socket.emit('shoot'); // ショット
-//   objMovement['forward'] = true; // 前進
-//   Array.from(event.originalEvent.changedTouches).forEach(touch => {
-//     // タッチ情報のリストへの追加
-//     touches[touch.identifier] = { pageX: touch.pageX, pageY: touch.pageY };
-//   });
-// });
+$('#canvas-2d').on('touchstart', event => {
+  event.preventDefault(); // ブラウザ規定の動作の抑止
+  //console.log( 'touchstart', event, event.originalEvent.changedTouches );
+  // socket.emit('shoot'); // ショット
+  // objMovement['forward'] = true; // 前進
+  Array.from(event.originalEvent.changedTouches).forEach(touch => {
+    // タッチ情報のリストへの追加
+    touches[touch.identifier] = { pageX: touch.pageX, pageY: touch.pageY };
+  });
+});
 
 // タッチしながら移動
 $('#canvas-2d').on('touchmove', event => {
