@@ -1,5 +1,6 @@
 const Ball = require('./Ball');
 const Wall = require('./Wall');
+const OverlapTester = require('./OverlapTester');
 // 設定
 const SharedSettings = require('../../client/js/SharedSettings');
 const GameSettings = require('./GameSettings');
@@ -27,8 +28,6 @@ module.exports = class World {
         (SharedSettings.FIELD_HEIGHT - SharedSettings.WALL_HEIGHT);
       for (let tileX = -1; tileX <= 1; tileX++) {
         for (let tileY = -1; tileY <= 1; tileY++) {
-          // let tileX = 1;
-          // let tileY = 1;
           // 壁生成
           const wall = new Wall(
             fX_left +
@@ -68,11 +67,6 @@ module.exports = class World {
     };
     // ボールごとの処理
     this.setBall.forEach(ball => {
-      // ボールが落ちていたら削除する
-      if (!ball.isAlive) {
-        console.log('dead : socket.id = %s', ball.strSocketID);
-        this.destroyBall(ball);
-      }
       // スコア加算
       ball.iScore++;
       // ボールの座標値を更新する
@@ -81,7 +75,25 @@ module.exports = class World {
   }
 
   // 衝突判定
-  checkCollisions() {}
+  checkCollisions() {
+    // 攻撃ボール(balLA) vs 防御ボール(balLB)
+    this.setBall.forEach(ballA => {
+      this.setBall.forEach(ballB => {
+        // 自分ボールとの衝突処理はなし
+        if (ballA.strSocketID !== ballB.strSocketID) {
+          // 衝突
+          if (OverlapTester.overlapRects(ballA.rectBound, ballB.rectBound)) {
+            if (ballA.isAttack && !ballB.isAttack) {
+              console.log('dead : socket.id = %s', ballB.strSocketID);
+              this.destroyBall(ballB); // ボールの削除
+            }
+            // ballA.fSpeedY = -100;
+            // ballA.iScore += 5000; // ポイント
+          }
+        }
+      });
+    });
+  }
 
   // 新たな行動
   doNewActions(fDeltaTime) {}
