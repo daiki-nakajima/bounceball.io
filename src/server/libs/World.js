@@ -48,10 +48,8 @@ module.exports = class World {
   update(fDeltaTime) {
     // オブジェクトの座標値の更新
     this.updateObjects(fDeltaTime);
-
     // 衝突判定
     this.checkCollisions();
-
     // 新たな行動（特に、ボットに関する生成や動作
     this.doNewActions(fDeltaTime);
   }
@@ -70,7 +68,7 @@ module.exports = class World {
       // スコア加算
       ball.iScore++;
       // ボールの座標値を更新する
-      ball.update(fDeltaTime, rectBallField, this.setWall);
+      ball.update(fDeltaTime, rectBallField, this.setWall, this.setBall);
     });
   }
 
@@ -86,9 +84,8 @@ module.exports = class World {
             if (ballA.isAttack && !ballB.isAttack) {
               console.log('dead : socket.id = %s', ballB.strSocketID);
               this.destroyBall(ballB); // ボールの削除
+              // ballA.fSpZe += 5000; // ポイント
             }
-            // ballA.fSpeedY = -100;
-            // ballA.iScore += 5000; // ポイント
           }
         }
       });

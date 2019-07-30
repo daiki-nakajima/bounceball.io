@@ -31,11 +31,22 @@ module.exports = class GameObject {
     };
   }
 
-  // 壁との干渉チェック
+  // オブジェクトとの干渉チェック
   overlapWalls(setWall) {
     return Array.from(setWall).some(wall => {
       if (OverlapTester.overlapRects(this.rectBound, wall.rectBound)) {
         return true;
+      }
+    });
+  }
+
+  // 干渉したボールの反発力を返す
+  overlapBalls(setBall) {
+    return Array.from(setBall).some(ball => {
+      if (OverlapTester.overlapRects(this.rectBound, ball.rectBound)) {
+        if (this.strSocketID !== ball.strSocketID) {
+          return ball.resiliency;
+        }
       }
     });
   }

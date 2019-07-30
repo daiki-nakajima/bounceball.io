@@ -11,14 +11,15 @@ module.exports = class Ball extends GameObject {
     this.strSocketID = strSocketID;
     this.strNickName = strNickName;
     this.objMovement = {}; // 動作
-    this.fSpeedX = GameSettings.BALL_SPEED; // 速度[m/s]。1frameあたり5進む => 1/30[s] で5進む => 1[s]で150進む。
+    // this.fSpeedX = GameSettings.BALL_SPEED; // 速度[m/s]。1frameあたり5進む => 1/30[s] で5進む => 1[s]で150進む。
+    this.fSpeedX = 0;
     this.fSpeedY = 0;
     this.resiliency = GameSettings.BALL_RESILIENCY; // 反発力初期値
     this.isAlive = true; // 生存
     this.iScore = 0; // スコア
     this.isAttack = false;
 
-    // 障害物にぶつからない初期位置を算出するまでループ
+    // 初期位置を算出（障害物と重ならなくなるまでループ）
     do {
       // ランダムに床を決定
       const numOfTargetWall = Math.floor(Math.random() * setWall.size);
@@ -47,21 +48,28 @@ module.exports = class Ball extends GameObject {
   }
 
   // 更新
-  update(fDeltaTime, rectField, setWall) {
+  update(fDeltaTime, rectField, setWall, setBall) {
     const fX_old = this.fX; // 移動前座標値のバックアップ
     const fY_old = this.fY; // 移動前座標値のバックアップ
-    // console.log(this.fX, this.fY);
 
     // X座標の計算（方向キー）
     let fX_new = this.fX;
-    const fDistance = this.fSpeedX * fDeltaTime;
-    // ユーザ入力に従って、進行方向を決定
+    // ユーザ入力に従って、進行方向（速度）決定
     if (this.objMovement['left']) {
-      fX_new -= fDistance; // 左
+      if (this.fSpeedX > 0) {
+        this.fSpeedX -= 20; // ブレーキ
+      } else if (this.fSpeedX >= -1000) {
+        this.fSpeedX -= 10; // 左アクセル
+      }
     }
     if (this.objMovement['right']) {
-      fX_new += fDistance; // 右
+      if (this.fSpeedX < 0) {
+        this.fSpeedX += 20; // ブレーキ
+      } else if (this.fSpeedX <= 1000) {
+        this.fSpeedX += 10; // 右アクセル
+      }
     }
+    fX_new += this.fSpeedX * fDeltaTime; // 速度から位置
 
     // Y座標の計算（自由落下）
     let fY_new = this.fY;
@@ -82,8 +90,16 @@ module.exports = class Ball extends GameObject {
     // 座標更新
     this.setPos(fX_new, fY_new);
 
-    // 動きがある場合は、不可侵領域との衝突判定
+    // 衝突判定フラグ
     let bCollision = false;
+    // 衝突したボールの反発力を受け取る（衝突なしなら0。）
+    let res = 0;
+    res = this.overlapBalls(setBall);
+    if (res > 0) {
+      bCollision = true;
+      this.fSpeedX *= -1;
+      this.fSpeedY *= -1;
+    }
     // 床を踏んだか判定。
     if (this.landOnWalls(setWall) && this.fSpeedY > 0) {
       // 攻撃終了
@@ -102,6 +118,7 @@ module.exports = class Ball extends GameObject {
         fY: this.fY
       });
       // 画面端に到達したら反対の画面端へワープ。
+      // TODO: setPos を書きすぎているのでまとめる。
       switch (dir) {
         case 'right':
           this.setPos(fX_new - SharedSettings.FIELD_WIDTH, fY_new);
