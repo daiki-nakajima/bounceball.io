@@ -34,6 +34,17 @@ body img {
     background-color: rgb(159, 214, 247);
 }
 
+.fade-box {
+    transition: opacity 1s, visibility 1s;
+    opacity: 1;
+    visibility: visible;
+}
+
+.fade-box.is-hide {
+    opacity: 0;
+    visibility: hidden;
+}
+
 #start-button {
     display: inline-block;
     padding: 0.3em 1em;

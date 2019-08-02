@@ -1,8 +1,9 @@
 // スクリーンクラス
 class Screen {
-  constructor(socket, canvas) {
+  constructor(socket, canvas, startScreen) {
     this.socket = socket;
     this.canvas = canvas;
+    this.startScreen = startScreen;
     this.context = canvas.getContext('2d');
     // this.canvas = canvas[0];
     // this.ga_canvas = {
@@ -57,7 +58,7 @@ class Screen {
 
     // デッドしたらスタート画面に戻る
     this.socket.on('dead', () => {
-      $('#start-screen').show();
+      startScreen.classList.toggle('is-hide');
     });
   }
 

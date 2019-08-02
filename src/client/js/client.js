@@ -2,9 +2,11 @@
 
 // サーバーへの接続要求
 const socket = io.connect();
-// キャンバス
+// ゲーム画面
 const canvas = document.querySelector('#canvas-2d');
-const screen = new Screen(socket, canvas);
+// スタート画面
+let startScreen = document.getElementById('start-screen');
+const screen = new Screen(socket, canvas, startScreen);
 // キャンバスの描画開始
 screen.animate(0);
 
@@ -18,7 +20,7 @@ $('#start-button').on('click', () => {
   // サーバーに'enter-the-game'を送信
   const objConfig = { strNickName: $('#nickname').val() };
   socket.emit('enter-the-game', objConfig);
-  $('#start-screen').hide();
+  startScreen.classList.toggle('is-hide');
 });
 
 // キーの入力（キーダウン、キーアップ）の処理
