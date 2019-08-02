@@ -137,7 +137,7 @@ module.exports = class Ball extends GameObject {
           break;
       }
     }
-    if (bCollision) {
+    if (bCollision && !this.isAttack) {
       // 衝突する場合は更新を無効とし、元の座標へ戻す。
       this.setPos(fX_old, fY_old);
       // bDrived = false; // 前後方向の動きはなし
