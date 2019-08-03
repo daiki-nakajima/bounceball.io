@@ -45,7 +45,7 @@ module.exports = class GameObject {
     return Array.from(setBall).some(ball => {
       if (OverlapTester.overlapRects(this.rectBound, ball.rectBound)) {
         if (this.strSocketID !== ball.strSocketID) {
-          return ball.resiliency;
+          return true;
         }
       }
     });

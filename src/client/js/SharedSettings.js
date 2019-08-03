@@ -33,6 +33,11 @@ class SharedSettings {
   static get WALL_HEIGHT() {
     return 50.0;
   }
+
+  // 初期バウンド力
+  static get INIT_BOUNCY() {
+    return 400;
+  }
 }
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {

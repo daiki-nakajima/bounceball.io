@@ -14,8 +14,7 @@ module.exports = class Ball extends GameObject {
     this.objMovement = {}; // 動作
     this.fSpeedX = 0;
     this.fSpeedY = 0;
-    this.resiliency = GameSettings.BALL_RESILIENCY; // 反発力初期値
-    this.iScore = 0; // スコア
+    this.bouncy = SharedSettings.INIT_BOUNCY; // バウンド力 = スコア
     this.isAttack = false;
 
     // 初期位置を算出（障害物と重ならなくなるまでループ）
@@ -41,7 +40,7 @@ module.exports = class Ball extends GameObject {
     return Object.assign(super.toJson(), {
       strSocketID: this.strSocketID,
       strNickName: this.strNickName,
-      iScore: this.iScore
+      bouncy: this.bouncy
     });
   }
 
@@ -85,19 +84,8 @@ module.exports = class Ball extends GameObject {
       }, 500);
     }
     fY_new += this.fSpeedY * fDeltaTime; // 速度から位置
-
-    // 床を踏んだか判定。
-    if (this.landOnWalls(setWall) && this.fSpeedY > 0) {
-      // 攻撃終了
-      this.isAttack = false;
-      // 床を踏んだのでバウンド。
-      this.fSpeedY = this.resiliency * fDeltaTime;
-      // バウンド力UP
-      this.resiliency *= GameSettings.BALL_UPOFRATE;
-    } else if (
-      // 画面端に到達したか判定。
-      !OverlapTester.pointInRect(rectField, { fX: this.fX, fY: this.fY })
-    ) {
+    // 画面端に到達したか判定
+    if (!OverlapTester.pointInRect(rectField, { fX: this.fX, fY: this.fY })) {
       //  ぶつかった方向判定
       const dir = OverlapTester.touchDirInRect(rectField, {
         fX: this.fX,
@@ -127,12 +115,25 @@ module.exports = class Ball extends GameObject {
     // 他ボールとの衝突判定処理
     let bCollision = false;
     // 衝突したボールの反発力を受け取る（衝突なしなら0。）
-    let res = 0;
-    res = this.overlapBalls(setBall);
-    if (res > 0) {
+    // let colBouncy = 0;
+    // colBouncy = this.overlapBalls(setBall);
+    if (this.overlapBalls(setBall)) {
       bCollision = true;
       this.fSpeedX *= -1;
       this.fSpeedY *= -1;
+      if (this.isAttack) {
+        this.fSpeedY = -100;
+      }
+    }
+    // 床との衝突判定処理
+    if (this.landOnWalls(setWall) && this.fSpeedY > 0) {
+      // bCollision = true;
+      // 攻撃終了
+      this.isAttack = false;
+      // 床を踏んだのでバウンド。
+      this.fSpeedY = -this.bouncy;
+      // バウンド力UP
+      this.bouncy += 1;
     }
     // 衝突する場合は更新を無効とし、元の座標へ戻す。
     if (bCollision && !this.isAttack) {

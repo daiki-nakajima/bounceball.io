@@ -20,13 +20,6 @@ module.exports = class GameSettings {
     return 40;
   }
 
-  static get BALL_RESILIENCY() {
-    return -12000;
-  }
-
-  static get BALL_UPOFRATE() {
-    return 1.02;
-  }
   // 壁
   static get WALL_COUNT() {
     return 12;

@@ -66,8 +66,6 @@ module.exports = class World {
     };
     // ボールごとの処理
     this.setBall.forEach(ball => {
-      // スコア加算
-      ball.iScore++;
       // ボールの座標値を更新する
       ball.update(fDeltaTime, rectBallField, this.setWall, this.setBall);
     });
@@ -89,10 +87,10 @@ module.exports = class World {
         if (ballA.strSocketID !== ballB.strSocketID) {
           // 衝突
           if (OverlapTester.overlapRects(ballA.rectBound, ballB.rectBound)) {
-            if (ballA.isAttack && !ballB.isAttack) {
+            if (ballA.isAttack && !ballB.isAttack && ballA.fSpeedY < 0) {
+              ballA.bouncy += ballB.bouncy / 10; // ポイント
               console.log('dead : socket.id = %s', ballB.strSocketID);
               this.destroyBall(ballB); // ボールの削除
-              // ballA.fSpZe += 5000; // ポイント
             }
           }
         }

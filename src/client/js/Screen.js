@@ -13,6 +13,7 @@ class Screen {
     this.aBall = null;
     this.aWall = null;
     this.aExpl = null;
+    this.initBouncy = SharedSettings.INIT_BOUNCY;
 
     // キャンバスの初期化
     this.canvas.width = SharedSettings.CANVAS_WIDTH;
@@ -140,7 +141,8 @@ class Screen {
       this.context.save();
       this.context.font = RenderingSettings.SCORE_FONT;
       this.context.fillStyle = RenderingSettings.SCORE_COLOR;
-      this.context.fillText('Score : ' + ballSelf.iScore, 20, 40);
+      const score = parseInt(ballSelf.bouncy) - this.initBouncy;
+      this.context.fillText('Score : ' + score, 20, 40);
       this.context.restore();
     }
 
@@ -229,8 +231,8 @@ class Screen {
     // スコア順に整列
     sortBalls
       .sort((a, b) => {
-        if (a.iScore < b.iScore) return 1;
-        if (a.iScore > b.iScore) return -1;
+        if (a.bouncy < b.bouncy) return 1;
+        if (a.bouncy > b.bouncy) return -1;
         return 0;
       })
       .forEach((ball, i) => {
@@ -251,11 +253,8 @@ class Screen {
           (i + 2) * 40
         );
         this.context.textAlign = 'end';
-        this.context.fillText(
-          ball.iScore,
-          this.canvas.width - 0 * 10,
-          (i + 2) * 40
-        );
+        const score = parseInt(ball.bouncy) - this.initBouncy;
+        this.context.fillText(score, this.canvas.width - 1 * 10, (i + 2) * 40);
         this.context.restore();
       });
   }
