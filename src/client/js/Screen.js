@@ -236,6 +236,7 @@ class Screen {
         if (a.bouncy > b.bouncy) return -1;
         return 0;
       })
+      .slice(0, 5)
       .forEach((ball, i) => {
         this.context.save();
         this.context.font = RenderingSettings.SCORE_FONT;
