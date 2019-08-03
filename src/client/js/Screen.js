@@ -152,47 +152,14 @@ class Screen {
       this.context.restore();
     }
 
-    // 画面右上にサーバー処理時間表示
+    // 画面右上にスコアランキング表示
     this.context.save();
     this.context.font = RenderingSettings.PROCESSINGTIME_FONT;
     this.context.fillStyle = RenderingSettings.PROCESSINGTIME_COLOR;
     this.context.fillText('Leader Board', this.canvas.width - 25 * 10, 40);
     this.context.restore();
-
     if (null !== this.aBall) {
-      let sortBalls = this.aBall;
-      // スコア順に整列
-      sortBalls
-        .sort((a, b) => {
-          if (a.iScore < b.iScore) return 1;
-          if (a.iScore > b.iScore) return -1;
-          return 0;
-        })
-        .forEach((ball, i) => {
-          this.context.save();
-          this.context.font = RenderingSettings.SCORE_FONT;
-          this.context.fillStyle = RenderingSettings.SCORE_COLOR;
-          // #1 name score
-          this.context.textAlign = 'start';
-          this.context.fillText(
-            '#' + (i + 1),
-            this.canvas.width - 30 * 10,
-            (i + 2) * 40
-          );
-          this.context.textAlign = 'start';
-          this.context.fillText(
-            ball.strNickName,
-            this.canvas.width - 25 * 10,
-            (i + 2) * 40
-          );
-          this.context.textAlign = 'end';
-          this.context.fillText(
-            ball.iScore,
-            this.canvas.width - 0 * 10,
-            (i + 2) * 40
-          );
-          this.context.restore();
-        });
+      this.renderScore(this.aBall);
     }
   }
 
@@ -263,5 +230,41 @@ class Screen {
     this.context.restore();
 
     this.context.restore();
+  }
+
+  renderScore(aBall) {
+    let sortBalls = aBall;
+    // スコア順に整列
+    sortBalls
+      .sort((a, b) => {
+        if (a.iScore < b.iScore) return 1;
+        if (a.iScore > b.iScore) return -1;
+        return 0;
+      })
+      .forEach((ball, i) => {
+        this.context.save();
+        this.context.font = RenderingSettings.SCORE_FONT;
+        this.context.fillStyle = RenderingSettings.SCORE_COLOR;
+        // #1 name score
+        this.context.textAlign = 'start';
+        this.context.fillText(
+          '#' + (i + 1),
+          this.canvas.width - 30 * 10,
+          (i + 2) * 40
+        );
+        this.context.textAlign = 'start';
+        this.context.fillText(
+          ball.strNickName,
+          this.canvas.width - 25 * 10,
+          (i + 2) * 40
+        );
+        this.context.textAlign = 'end';
+        this.context.fillText(
+          ball.iScore,
+          this.canvas.width - 0 * 10,
+          (i + 2) * 40
+        );
+        this.context.restore();
+      });
   }
 }
