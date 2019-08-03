@@ -5,13 +5,6 @@ class Screen {
     this.canvas = canvas;
     this.startScreen = startScreen;
     this.context = canvas.getContext('2d');
-    // this.canvas = canvas[0];
-    // this.ga_canvas = {
-    //   0: document.getElementById('canvas1'),
-    //   1: document.getElementById('canvas2')
-    // };
-    // this.ga_flip = 0;
-    // this.context = this.ga_canvas[this.ga_flip].getContext('2d');
 
     this.assets = new Assets();
     this.iProcessingTimeNanoSec = 0;
@@ -47,7 +40,6 @@ class Screen {
     // 接続確立時の処理
     this.socket.on('connect', () => {
       console.log('connect : socket.id = %s', socket.id);
-      // this.socket.emit('enter-the-game');
     });
 
     // サーバーからの状態通知(update)に対する処理

@@ -85,13 +85,15 @@ module.exports = class Game {
           // 各ボールへ個別送信
           io.to(ball.strSocketID).emit(
             'update',
-            // 矩形表示領域に重なっていないボール、壁は返さない（＝表示されない）
-            Array.from(world.setBall).filter(ball => {
-              return OverlapTester.overlapRects(
-                rectVisibleArea,
-                ball.rectBound
-              );
-            }),
+            Array.from(world.setBall),
+            // ボールはスコア表示のため全送信、クライアント側が重くなったら考える
+            // Array.from(world.setBall).filter(ball => {
+            //   return OverlapTester.overlapRects(
+            //     rectVisibleArea,
+            //     ball.rectBound
+            //   );
+            // }),
+            // 矩形表示領域に重なっている壁だけクライアントへ返す（表示させる）
             Array.from(world.setWall).filter(wall => {
               return OverlapTester.overlapRects(
                 rectVisibleArea,
