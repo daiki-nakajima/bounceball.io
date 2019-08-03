@@ -110,9 +110,6 @@ class Screen {
       this.canvas.height * 0.5 - this.fCenterY
     );
 
-    // キャンバスの塗りつぶし
-    this.renderField();
-
     const fTimeCurrentSec = iTimeCurrent * 0.001; // iTimeCurrentは、ミリ秒。秒に変換。
     // ボールの描画
     if (null !== this.aBall) {
@@ -214,26 +211,6 @@ class Screen {
       SharedSettings.WALL_HEIGHT
     ); // 描画先領域の大きさ
     this.context.restore();
-  }
-
-  // フィールドの描画 / キャンバスと干渉する領域のみ描画
-  // 原因わからないが、描画が追いつかないため停止
-  renderField() {
-    // this.context.save();
-    // this.context.drawImage(
-    //   this.assets.imageField,
-    //   // 元画像のサイズ指定
-    //   this.assets.rectFieldInFieldImage.sx, // 元画像の右上座標x
-    //   this.assets.rectFieldInFieldImage.sy, // 元画像の右上座標y
-    //   this.assets.rectFieldInFieldImage.sw, // 元画像の幅
-    //   this.assets.rectFieldInFieldImage.sh, // 元画像の高さ
-    //   // 描画位置指定
-    //   1 * RenderingSettings.FIELDTILE_WIDTH, // 描画領域の右上座標（領域中心が、原点になるように指定する）
-    //   1 * RenderingSettings.FIELDTILE_HEIGHT, // 描画領域の右上座標（領域中心が、原点になるように指定する）
-    //   RenderingSettings.FIELDTILE_WIDTH, // 描画領域の幅
-    //   RenderingSettings.FIELDTILE_HEIGHT // 描画領域の高さ
-    // );
-    // this.context.restore();
   }
 
   renderBall(ball, iIndexFrame) {
