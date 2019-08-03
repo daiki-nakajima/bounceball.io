@@ -19,6 +19,7 @@ class Screen {
     this.iProcessingTimeNanoSec = 0;
     this.aBall = null;
     this.aWall = null;
+    this.aExpl = null;
 
     // キャンバスの初期化
     this.canvas.width = SharedSettings.CANVAS_WIDTH;
@@ -50,9 +51,10 @@ class Screen {
     });
 
     // サーバーからの状態通知(update)に対する処理
-    this.socket.on('update', (aBall, aWall, iProcessingTimeNanoSec) => {
+    this.socket.on('update', (aBall, aWall, aExpl, iProcessingTimeNanoSec) => {
       this.aBall = aBall;
       this.aWall = aWall;
+      this.aExpl = aExpl;
       this.iProcessingTimeNanoSec = iProcessingTimeNanoSec;
     });
 
@@ -72,12 +74,6 @@ class Screen {
 
   // 描画。animateから無限に呼び出される
   render(iTimeCurrent) {
-    // ダブルバッファリング
-    // this.ga_canvas[1 - this.ga_flip].style.visibility = 'hidden';
-    // this.ga_canvas[this.ga_flip].style.visibility = 'visible';
-    // this.ga_flip = 1 - this.ga_flip;
-    // this.context = this.ga_canvas[this.ga_flip].getContext('2d');
-
     // ボールリストから、socket.idで自ボールを取得する
     let ballSelf = null;
     if (null !== this.aBall) {
@@ -92,13 +88,9 @@ class Screen {
 
     // 描画中心座標値
     if (null !== ballSelf) {
-      // 自タンク座標値
+      // ボールは中心座標に位置する
       this.fCenterX = ballSelf.fX;
       this.fCenterY = ballSelf.fY;
-      // if (this.fCenterY >= ballSelf.fY || !this.isCentered) {
-      //   this.fCenterY = ballSelf.fY;
-      //   this.isCentered = true;
-      // }
     } else {
       this.fCenterX = SharedSettings.FIELD_WIDTH * 0.5;
       this.fCenterY = SharedSettings.FIELD_HEIGHT * 0.5;
@@ -121,19 +113,26 @@ class Screen {
     // キャンバスの塗りつぶし
     this.renderField();
 
+    const fTimeCurrentSec = iTimeCurrent * 0.001; // iTimeCurrentは、ミリ秒。秒に変換。
     // ボールの描画
     if (null !== this.aBall) {
-      const fTimeCurrentSec = iTimeCurrent * 0.001; // iTimeCurrentは、ミリ秒。秒に変換。
+      // const fTimeCurrentSec = iTimeCurrent * 0.001; // iTimeCurrentは、ミリ秒。秒に変換。
       const iIndexFrame = parseInt(fTimeCurrentSec / 0.2) % 6; // フレーム番号
       this.aBall.forEach(ball => {
         this.renderBall(ball, iIndexFrame);
       });
     }
-
     // 壁の描画
     if (null !== this.aWall) {
       this.aWall.forEach(wall => {
         this.renderWall(wall);
+      });
+    }
+    // 爆発の描画
+    if (null !== this.aExpl) {
+      const iIndexFrame4Expl = parseInt(fTimeCurrentSec / 0.2) % 24; // フレーム番号
+      this.aExpl.forEach(expl => {
+        this.renderExpl(expl, iIndexFrame4Expl);
       });
     }
 
@@ -234,5 +233,26 @@ class Screen {
     this.context.restore(); // ニックネーム描画前をリストア
 
     this.context.restore(); // translate前の状態をリストア
+  }
+
+  renderExpl(expl, iIndexFrame) {
+    this.context.save();
+    this.context.translate(expl.fX, expl.fY);
+
+    this.context.save();
+    this.context.drawImage(
+      this.assets.imageExpls,
+      this.assets.arectExplInItemsImage[iIndexFrame].sx,
+      this.assets.arectExplInItemsImage[iIndexFrame].sy,
+      this.assets.arectExplInItemsImage[iIndexFrame].sw,
+      this.assets.arectExplInItemsImage[iIndexFrame].sh,
+      -SharedSettings.BALL_WIDTH * 0.5,
+      -SharedSettings.BALL_HEIGHT * 0.5,
+      SharedSettings.BALL_WIDTH * 3,
+      SharedSettings.BALL_HEIGHT * 3
+    );
+    this.context.restore();
+
+    this.context.restore();
   }
 }

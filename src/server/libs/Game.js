@@ -32,7 +32,7 @@ module.exports = class Game {
 
       // 移動コマンドの処理の指定
       socket.on('change-my-movement', objMovement => {
-        if (!ball || !ball.isAlive) {
+        if (!ball) {
           return;
         }
         // 自ボールの移動
@@ -96,6 +96,7 @@ module.exports = class Game {
                 wall.rectBound
               );
             }),
+            Array.from(world.setExpl),
             iNanosecDiff
           );
         }
@@ -122,6 +123,7 @@ module.exports = class Game {
           Array.from(world.setWall).filter(wall => {
             return OverlapTester.overlapRects(rectVisibleArea, wall.rectBound);
           }),
+          Array.from(world.setExpl),
           iNanosecDiff
         ); // 個別送信
       });

@@ -12,10 +12,6 @@ module.exports = class GameSettings {
     return 300.0;
   }
 
-  // 回転速度[rad/s]。1frameあたり0.1進む => 1/30[s] で0.1進む => 1[s]で3[rad]進む。
-  // static get BALL_ROTATION_SPEED() {
-  //   return 3.0;
-  // }
   static get GRAVITY_ACCELERATION() {
     return 500;
   }
@@ -31,9 +27,12 @@ module.exports = class GameSettings {
   static get BALL_UPOFRATE() {
     return 1.02;
   }
-
   // 壁
   static get WALL_COUNT() {
     return 12;
+  }
+  // 爆発時間
+  static get EXPL_LIFETIME() {
+    return 2.0; //単位[s]
   }
 };

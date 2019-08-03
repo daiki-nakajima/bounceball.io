@@ -1,4 +1,5 @@
 const GameObject = require('./GameObject');
+const Explosion = require('./Explosion');
 const SharedSettings = require('../../client/js/SharedSettings');
 const GameSettings = require('./GameSettings');
 const OverlapTester = require('./OverlapTester');
@@ -11,11 +12,9 @@ module.exports = class Ball extends GameObject {
     this.strSocketID = strSocketID;
     this.strNickName = strNickName;
     this.objMovement = {}; // 動作
-    // this.fSpeedX = GameSettings.BALL_SPEED; // 速度[m/s]。1frameあたり5進む => 1/30[s] で5進む => 1[s]で150進む。
     this.fSpeedX = 0;
     this.fSpeedY = 0;
     this.resiliency = GameSettings.BALL_RESILIENCY; // 反発力初期値
-    this.isAlive = true; // 生存
     this.iScore = 0; // スコア
     this.isAttack = false;
 
@@ -42,7 +41,6 @@ module.exports = class Ball extends GameObject {
     return Object.assign(super.toJson(), {
       strSocketID: this.strSocketID,
       strNickName: this.strNickName,
-      isAlive: this.isAlive,
       iScore: this.iScore
     });
   }
@@ -147,9 +145,8 @@ module.exports = class Ball extends GameObject {
     return true;
   }
 
-  // 下へ落ちた
-  dead() {
-    this.isAlive = false;
-    return this.iLife;
+  // 爆発
+  explode() {
+    return new Explosion(this.fX, this.fY, this.fAngle);
   }
 };

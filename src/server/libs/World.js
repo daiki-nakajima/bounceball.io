@@ -15,6 +15,7 @@ module.exports = class World {
     this.io = io;
     this.setBall = new Set();
     this.setWall = new Set();
+    this.setExpl = new Set(); // 弾丸リスト
     this.setNotPlayingSocketID = new Set(); // プレイしていない通信のソケットIDリスト
 
     // 壁の生成
@@ -70,6 +71,13 @@ module.exports = class World {
       // ボールの座標値を更新する
       ball.update(fDeltaTime, rectBallField, this.setWall, this.setBall);
     });
+    // 爆発ごとの処理
+    this.setExpl.forEach(expl => {
+      const isDisappear = expl.update(fDeltaTime);
+      if (isDisappear) {
+        this.setExpl.delete(expl);
+      }
+    });
   }
 
   // 衝突判定
@@ -120,6 +128,11 @@ module.exports = class World {
 
   // ボールの破棄
   destroyBall(ball) {
+    // 爆発
+    const expl = ball.explode();
+    if (expl) {
+      this.setExpl.add(expl);
+    }
     // ボールリストからの削除
     this.setBall.delete(ball);
     if (false) {
