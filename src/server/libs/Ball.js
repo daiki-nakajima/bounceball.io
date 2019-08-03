@@ -86,16 +86,6 @@ module.exports = class Ball extends GameObject {
     }
     fY_new += this.fSpeedY * fDeltaTime; // 速度から位置
 
-    // 衝突判定フラグ
-    let bCollision = false;
-    // 衝突したボールの反発力を受け取る（衝突なしなら0。）
-    let res = 0;
-    res = this.overlapBalls(setBall);
-    if (res > 0) {
-      bCollision = true;
-      this.fSpeedX *= -1;
-      this.fSpeedY *= -1;
-    }
     // 床を踏んだか判定。
     if (this.landOnWalls(setWall) && this.fSpeedY > 0) {
       // 攻撃終了
@@ -132,12 +122,23 @@ module.exports = class Ball extends GameObject {
       }
     }
     // 座標更新
-    if (bCollision && !this.isAttack) {
-      // 衝突する場合は更新を無効とし、元の座標へ戻す。
-      this.setPos(fX_old, fY_old);
-    } else {
-      this.setPos(fX_new, fY_new);
+    this.setPos(fX_new, fY_new);
+
+    // 他ボールとの衝突判定処理
+    let bCollision = false;
+    // 衝突したボールの反発力を受け取る（衝突なしなら0。）
+    let res = 0;
+    res = this.overlapBalls(setBall);
+    if (res > 0) {
+      bCollision = true;
+      this.fSpeedX *= -1;
+      this.fSpeedY *= -1;
     }
+    // 衝突する場合は更新を無効とし、元の座標へ戻す。
+    if (bCollision && !this.isAttack) {
+      this.setPos(fX_old, fY_old);
+    }
+
     return true;
   }
 
