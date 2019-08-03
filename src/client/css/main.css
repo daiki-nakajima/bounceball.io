@@ -59,6 +59,7 @@ body img {
 #start-button:hover {
     background: black;
     color: rgb(255,163,59);
+    
 }
 
 #logo {
@@ -78,3 +79,8 @@ body img {
 	outline: none;
 }
 
+.input-box {
+    text-align: center;
+    width: 100%;
+    font-size: xx-large;
+}
