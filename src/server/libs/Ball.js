@@ -47,11 +47,14 @@ module.exports = class Ball extends GameObject {
 
   // 更新
   update(fDeltaTime, rectField, setWall, setBall) {
-    const fX_old = this.fX; // 移動前座標値のバックアップ
-    const fY_old = this.fY; // 移動前座標値のバックアップ
+    // 移動前座標値のバックアップ
+    const fX_old = this.fX;
+    const fY_old = this.fY;
+    // 移動後座標
+    let fX_new = this.fX;
+    let fY_new = this.fY;
 
     // X座標の計算（方向キー）
-    let fX_new = this.fX;
     // ユーザ入力に従って、進行方向（速度）決定
     if (this.objMovement['left']) {
       if (this.fSpeedX > 0) {
@@ -70,23 +73,18 @@ module.exports = class Ball extends GameObject {
     fX_new += this.fSpeedX * fDeltaTime; // 速度から位置
 
     // Y座標の計算（自由落下）
-    let fY_new = this.fY;
     let force = GameSettings.BALL_MASS * GameSettings.GRAVITY_ACCELERATION; // 運動方程式
     let acceleration = force / GameSettings.BALL_MASS; // 力から加速度
     this.fSpeedY += acceleration * fDeltaTime; // 加速度から速度
     // 下入力で急降下（攻撃）
     if (this.objMovement['back']) {
       this.fSpeedY = -100;
-
       setTimeout(() => {
         this.isAttack = true;
         this.fSpeedY = 2500;
       }, 500);
     }
     fY_new += this.fSpeedY * fDeltaTime; // 速度から位置
-
-    // 座標更新
-    this.setPos(fX_new, fY_new);
 
     // 衝突判定フラグ
     let bCollision = false;
@@ -115,33 +113,31 @@ module.exports = class Ball extends GameObject {
         fX: this.fX,
         fY: this.fY
       });
-      // 画面端に到達したら反対の画面端へワープ。
-      // TODO: setPos を書きすぎているのでまとめる。
+      // 画面端に到達したら反対の画面端へワープ > 連続したフィールドを模擬
       switch (dir) {
         case 'right':
-          this.setPos(fX_new - SharedSettings.FIELD_WIDTH, fY_new);
+          fX_new -= SharedSettings.FIELD_WIDTH;
           break;
         case 'left':
-          this.setPos(fX_new + SharedSettings.FIELD_WIDTH, fY_new);
+          fX_new += SharedSettings.FIELD_WIDTH;
           break;
         case 'bottom':
-          this.setPos(fX_new, fY_new + SharedSettings.FIELD_HEIGHT);
+          fY_new += SharedSettings.FIELD_HEIGHT;
           break;
         case 'top':
-          this.setPos(fX_new, fY_new - SharedSettings.FIELD_HEIGHT);
+          fY_new -= SharedSettings.FIELD_HEIGHT;
           break;
-
         default:
           break;
       }
     }
+    // 座標更新
     if (bCollision && !this.isAttack) {
       // 衝突する場合は更新を無効とし、元の座標へ戻す。
       this.setPos(fX_old, fY_old);
-      // bDrived = false; // 前後方向の動きはなし
+    } else {
+      this.setPos(fX_new, fY_new);
     }
-
-    // return bDrived; // 前後方向の動きがあったかを返す（ボットタンクで使用する）
     return true;
   }
 

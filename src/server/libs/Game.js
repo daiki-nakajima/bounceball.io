@@ -5,16 +5,18 @@ const SharedSettings = require('../../client/js/SharedSettings');
 const GameSettings = require('./GameSettings');
 
 // ゲームクラス
-// ・ワールドを保持する
-// ・通信処理を有する
-// ・周期的処理を有する
+// ワールドクラスとクライアントの中継クラス
+// ・ワールド（=ゲーム全体の情報）を保持
+// ・クライアントから情報を受信
+// ・周期的処理をクライアントへ送信
 module.exports = class Game {
   // ゲームスタート
   start(io) {
-    const world = new World(io); // setInterval()内での参照があるので、スコープを抜けても、生存し続ける（ガーベッジコレクションされない）。
-    let iTimeLast = Date.now(); // setInterval()内での参照があるので、スコープを抜けても、生存し続ける（ガーベッジコレクションされない）。
+    // setInterval()内での参照があるので、スコープを抜けても、生存し続ける（ガーベッジコレクションされない）。
+    const world = new World(io);
+    let iTimeLast = Date.now();
 
-    // 接続時の処理
+    // 接続したら、各イベント受信時の処理を指定
     io.on('connection', socket => {
       console.log('connection : socket.id = %s', socket.id);
       // コネクションごとのボールオブジェクト。イベントをまたいで使用される。
@@ -23,14 +25,14 @@ module.exports = class Game {
       // まだゲーム開始前。プレイしていない通信のソケットIDリストに追加
       world.setNotPlayingSocketID.add(socket.id);
 
-      // ゲーム開始時の処理の指定
+      // ゲーム開始時処理
       socket.on('enter-the-game', objConfig => {
         // 自ボールの作成
         console.log('enter-the-game : socket.id = %s', socket.id);
         ball = world.createBall(socket.id, objConfig.strNickName);
       });
 
-      // 移動コマンドの処理の指定
+      // 移動コマンド入力受信時処理
       socket.on('change-my-movement', objMovement => {
         if (!ball) {
           return;
@@ -39,7 +41,7 @@ module.exports = class Game {
         ball.objMovement = objMovement;
       });
 
-      // 切断時の処理の指定
+      // 切断時処理
       socket.on('disconnect', () => {
         console.log('disconnect : socket.id = %s', socket.id);
         if (!ball) {
