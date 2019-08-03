@@ -21,6 +21,8 @@ $('#start-button').on('click', () => {
   const objConfig = { strNickName: $('#nickname').val() };
   socket.emit('enter-the-game', objConfig);
   startScreen.classList.toggle('is-hide');
+  // 二度押し防止
+  document.getElementById('start-button').disabled = true;
 });
 
 // キーの入力（キーダウン、キーアップ）の処理

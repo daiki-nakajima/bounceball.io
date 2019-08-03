@@ -53,6 +53,7 @@ class Screen {
 
     // デッドしたらスタート画面に戻る
     this.socket.on('dead', () => {
+      document.getElementById('start-button').disabled = false;
       startScreen.classList.toggle('is-hide');
     });
   }
