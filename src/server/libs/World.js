@@ -88,7 +88,7 @@ module.exports = class World {
           // 衝突
           if (OverlapTester.overlapRects(ballA.rectBound, ballB.rectBound)) {
             if (ballA.isAttack && !ballB.isAttack && ballA.fSpeedY < 0) {
-              ballA.bouncy += ballB.bouncy / 10; // ポイント
+              ballA.bouncy += ballB.bouncy / 5; // ポイント
               console.log('dead : socket.id = %s', ballB.strSocketID);
               this.destroyBall(ballB); // ボールの削除
             }
