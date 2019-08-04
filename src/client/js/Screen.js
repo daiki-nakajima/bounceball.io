@@ -55,7 +55,7 @@ class Screen {
     this.socket.on('dead', bouncy => {
       const score = parseInt(bouncy) - this.initBouncy;
       const scorelabel = document.getElementById('score');
-      scorelabel.innerText = `Your Bouncy : ${score}`;
+      scorelabel.innerText = 'Your Bouncy : ' + score;
       const startButton = document.getElementById('start-button');
       startButton.innerText = ' Play Again ';
       startButton.disabled = false;
