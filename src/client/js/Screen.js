@@ -53,9 +53,11 @@ class Screen {
 
     // デッドしたらスタート画面に戻る
     this.socket.on('dead', bouncy => {
-      const score = parseInt(bouncy) - this.initBouncy;
-      const scorelabel = document.getElementById('score');
-      scorelabel.innerText = 'Your Bouncy : ' + score;
+      // スコア
+      const score = Number(parseInt(bouncy) - this.initBouncy);
+      const scoreLabel = document.getElementById('score');
+      scoreLabel.innerText = 'Your Bouncy : ' + score;
+      // スタートボタン
       const startButton = document.getElementById('start-button');
       startButton.innerText = ' Play Again ';
       startButton.disabled = false;
