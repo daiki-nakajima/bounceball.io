@@ -52,8 +52,13 @@ class Screen {
     });
 
     // デッドしたらスタート画面に戻る
-    this.socket.on('dead', () => {
-      document.getElementById('start-button').disabled = false;
+    this.socket.on('dead', bouncy => {
+      const score = parseInt(bouncy) - this.initBouncy;
+      const scorelabel = document.getElementById('score');
+      scorelabel.innerText = `Your Bouncy : ${score}`;
+      const startButton = document.getElementById('start-button');
+      startButton.innerText = ' Play Again ';
+      startButton.disabled = false;
       startScreen.classList.toggle('is-hide');
     });
   }
@@ -73,7 +78,7 @@ class Screen {
     if (null !== this.aBall) {
       this.aBall.some(ball => {
         if (ball.strSocketID === this.socket.id) {
-          // 自タンク
+          // 自ボール
           ballSelf = ball;
           return true;
         }

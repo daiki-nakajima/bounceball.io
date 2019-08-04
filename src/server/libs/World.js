@@ -139,7 +139,7 @@ module.exports = class World {
       // ゲーム開始前に戻るので、プレイしていない通信のソケットIDリストに追加
       this.setNotPlayingSocketID.add(ball.strSocketID);
       // 削除対象ボールのクライアントにイベント'dead'を送信
-      this.io.to(ball.strSocketID).emit('dead');
+      this.io.to(ball.strSocketID).emit('dead', ball.bouncy);
     }
   }
 };

@@ -15,7 +15,7 @@
         href="https://twitter.com/share?ref_src=twsrc%5Etfw"
         class="twitter-share-button"
         data-size="large"
-        data-text="Let&#39;s Play bounceball.io!"
+        data-text="Let&#39;s Enjoy Bouncy!"
         data-url="https://bouceball.io"
         data-hashtags="bounceball"
         data-show-count="false"
@@ -25,12 +25,16 @@
         src="https://platform.twitter.com/widgets.js"
         charset="utf-8"
       ></script>
-      <!-- tweet button !-->
+      <!-- tweet button -->
     </div>
 
     <div style="flex: 1 1; position: relative; overflow:hidden;">
+      <!-- start screen -->
       <div id="start-screen" class="fade-box">
         <div class="input-box animated bounceInUp delay-1s">
+          <!-- score -->
+          <label for="score" id="score"></label><br />
+          <!-- input name -->
           <input
             type="text"
             name="nickname"
@@ -39,11 +43,13 @@
             autofocus
           />
           <br /><br />
+          <!-- game start button -->
           <button id="start-button">
             &nbsp;Play&nbsp;
           </button>
         </div>
       </div>
+      <!-- game screen -->
       <canvas id="canvas-2d"></canvas>
     </div>
 
