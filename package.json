@@ -5,7 +5,7 @@
   "main": "src/server/server.js",
   "scripts": {
     "start": "node src/server/server.js",
-    "start:prod": "sudo PORT=80 forever start src/server/server.js",
+    "start:prod": "sudo PORT=80 forever -w start src/server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
