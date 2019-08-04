@@ -59,7 +59,12 @@ class Screen {
       scoreLabel.innerText = 'Your Bouncy : ' + score;
       // スタートボタン
       const startButton = document.getElementById('start-button');
-      startButton.innerText = ' Play Again ';
+      const startButtonImg = startButton.firstElementChild;
+      startButtonImg.setAttribute('src', './images/playAgain.png');
+      startButtonImg.setAttribute(
+        'style',
+        'max-width: 369px; max-height: 80px;'
+      );
       startButton.disabled = false;
       startScreen.classList.toggle('is-hide');
     });

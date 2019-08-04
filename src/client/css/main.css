@@ -46,20 +46,25 @@ body img {
 }
 
 #start-button {
-    display: inline-block;
-    padding: 0.3em 1em;
-    font-size: 0.75em;
-    background: rgb(255,163,59);
-    color: black;
-    border: solid 2px black;
-    border-radius: 3px;
-    transition: .4s;
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+#start-button img {
+    width: 100%;
+    height: auto;
+    max-width: 180px;
+    max-height: 90px;
 }
 
 #start-button:hover {
-    background: black;
-    color: rgb(255,163,59);
-    
+    animation: bound .1s ease 2 alternate;
+}
+
+@keyframes bound {
+    0% {transform: translateY(0px);}
+    100% {transform: translateY(-10px);}
 }
 
 #logo {
@@ -71,11 +76,11 @@ body img {
     font-size: 0.5em;
     background: transparent;
     border: none;
-    border-bottom: 2px solid black;
+    border-bottom: 4px solid black;
 }
 
 #nickname:focus {
-	border-bottom: 2px solid rgb(255,163,59);
+	border-bottom: 4px solid rgb(255,163,59);
 	outline: none;
 }
 
