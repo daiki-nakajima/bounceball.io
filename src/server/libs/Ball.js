@@ -76,12 +76,9 @@ module.exports = class Ball extends GameObject {
     let acceleration = force / GameSettings.BALL_MASS; // 力から加速度
     this.fSpeedY += acceleration * fDeltaTime; // 加速度から速度
     // 下入力で急降下（攻撃）
-    if (this.objMovement['back']) {
-      this.fSpeedY = -100;
-      setTimeout(() => {
-        this.isAttack = true;
-        this.fSpeedY = 2500;
-      }, 500);
+    if (this.objMovement['back'] && !this.isAttack) {
+      this.isAttack = true;
+      this.fSpeedY = 2500;
     }
     fY_new += this.fSpeedY * fDeltaTime; // 速度から位置
     // 画面端に到達したか判定
